@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
 		
 		URL url = null;
 
-		url = new URL("http://"+SERVER_IP+"/index.php/app/requestVideoCategories");
+		url = new URL("http://https://github.com/rjain90/BigCloud.git"+SERVER_IP+"/index.php/app/requestVideoCategories");
 		
 		
 		HttpClient httpclient = new DefaultHttpClient();
