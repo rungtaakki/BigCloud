@@ -1,10 +1,20 @@
 package com.bowstringLLP.bigcloud;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.Menu;
+import java.util.List;
 
-public class MainActivity extends Activity {
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Environment;
+import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+
+import com.bowstringLLP.bigcloud.LoadListTask.RecordsUpdateListener;
+
+public class MainActivity extends Activity implements RecordsUpdateListener{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -12,13 +22,33 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		// test();
 		//res();
+
+		new LoadListTask(this).execute(null,null,null);
+	((ListView) this.findViewById(R.id.list)).setOnItemClickListener(new OnItemClickListener() {
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+			startIntent();
+		}
+
+	});
 	}
 
+	private void startIntent() {
+		Intent intent = new Intent(this, MediaPlayerDemo_Video.class);
+		intent.putExtra("PATH", Environment.getExternalStorageDirectory().getPath()+"/video/wildlife.mp4");
+		//intent.putExtra("PATH", Environment.getExternalStorageDirectory().getPath()+"/media/test.mp4");
+		startActivity(intent);
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+
+	@Override
+	public void onRecordsUpdated(List<ListItem> records) {
+		//findViewById(R.id.list).
 	}
 
 	/*

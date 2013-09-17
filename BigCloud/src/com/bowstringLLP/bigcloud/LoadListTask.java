@@ -14,41 +14,51 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.widget.ListView;
 
-public class LoadListTask extends AsyncTask<Void, Void, Void> {
+public class LoadListTask extends AsyncTask<Void, Void, List<ListItem>> {
+	
+	public interface RecordsUpdateListener
+	{
+		public void onRecordsUpdated(List<ListItem> records);
+	}
+
+	CustomListAdapter adapter;
+	ListView listView = null;
 		ProgressDialog dialog;
-		Context context;
+		Activity parent;
 		
-		public LoadListTask(Context context)
+		public LoadListTask(Activity parent)
 		{
-			this.context = context;
+			this.parent = parent;
+			adapter = new CustomListAdapter(parent);
+			
 		}
 		
 	@Override
 	protected void onPreExecute()
 	{
 		super.onPreExecute();
-		dialog = ProgressDialog.show(context, null, "Loading...");	
-		
+		dialog = ProgressDialog.show(parent, null, "Loading...");		
 	}
+	
 		  @Override
-		  protected Void doInBackground(Void... Voids) {
+		  protected List<ListItem> doInBackground(Void... Voids) {
 			  List<ListItem>listItem = res();
 		      InputStream in;
 		      try {
-		        for(int i=0;listItem.get(i)!=null;i++)
+		        for(int i=0;i<listItem.size() && listItem.get(i)!=null;i++)
 		        	{
 		        	in = new java.net.URL(listItem.get(i).thumb).openStream();
 		        	listItem.get(i).setBitmap(BitmapFactory.decodeStream(in));
 		        	}
 		        
-		        return null;
+		        return listItem;
 		      } catch (Exception e) {
 		          e.printStackTrace();
 		          return null;
@@ -56,9 +66,11 @@ public class LoadListTask extends AsyncTask<Void, Void, Void> {
 		  }
 
 		  @Override
-		  protected void onPostExecute(Void Voids) {
+		  protected void onPostExecute(List<ListItem> list) {
 		     // bmImage.setImageBitmap(result);
 			  dialog.dismiss();
+				adapter.setContent(list);
+				((ListView) parent.findViewById(R.id.list)).setAdapter(adapter);
 		}
 
 
@@ -95,11 +107,10 @@ private String _convertStreamToString(InputStream iS) {
 public List<ListItem> res() {
 	try {
 		String str = getUrl();
-		JSONObject object = (JSONObject) new JSONTokener(str).nextValue();
 		JSONObject json = new JSONObject(str);
 		//JSONObject dataObject = json.getJSONObject("data"); // this is the "data": { } part
 		JSONObject items = json.getJSONObject("feed");
-		JSONArray arr = items.names();
+		//JSONArray arr = items.names();
 		JSONArray obj = items.getJSONArray("entry");
 		JSONObject abc;
 		List<ListItem> listItem = new ArrayList<ListItem>();
