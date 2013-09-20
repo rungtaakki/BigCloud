@@ -158,7 +158,8 @@ public class MediaPlayerDemo_Video extends Activity implements
     }
     
     public void surfaceChanged(SurfaceHolder surfaceholder, int i, int j, int k) {
-        Log.d(TAG, "surfaceChanged called");
+     
+    	Log.d(TAG, "surfaceChanged called");
 
     }
 
@@ -199,13 +200,7 @@ public class MediaPlayerDemo_Video extends Activity implements
         mIsVideoReadyToBePlayed = false;
         mIsVideoSizeKnown = false;
     }
-
-    /*private void startVideoPlayback() {
-        Log.v(TAG, "startVideoPlayback");
-        
-        mMediaPlayer.start();
-    }
-*/
+    
     public void start() {
     	mMediaPlayer.start();
       }
