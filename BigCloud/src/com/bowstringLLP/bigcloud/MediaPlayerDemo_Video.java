@@ -16,6 +16,7 @@
 
 package com.bowstringLLP.bigcloud;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Point;
 import android.media.AudioManager;
@@ -25,6 +26,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnVideoSizeChangedListener;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -47,6 +49,7 @@ public class MediaPlayerDemo_Video extends Activity implements
     private boolean mIsVideoReadyToBePlayed = false;
     MediaController mediaController;
     private Handler handler = new Handler();
+    CountDownTimer timer;
 
     /**
      * 
@@ -60,10 +63,15 @@ public class MediaPlayerDemo_Video extends Activity implements
         holder = mPreview.getHolder();
         holder.addCallback(this);
         extras = getIntent().getExtras();
-
+        hideActionBar();
     }
 
-    private void playVideo(String path) {
+    @TargetApi(11)
+    private void hideActionBar() {
+		getActionBar().hide();
+	}
+
+	private void playVideo(String path) {
         doCleanUp();
         try {
         	
@@ -154,10 +162,33 @@ public class MediaPlayerDemo_Video extends Activity implements
     public boolean onTouchEvent(MotionEvent event) {
       //the MediaController will hide after 3 seconds - tap the screen to make it appear again
       mediaController.show();
+     handleActionBar();
       return false;
     }
     
-    public void surfaceChanged(SurfaceHolder surfaceholder, int i, int j, int k) {
+    @TargetApi(11)
+    private void handleActionBar() { 
+    	getActionBar().show();
+    
+    timer = new CountDownTimer(3000,1000)
+		{
+
+			@Override
+			public void onFinish() {
+				getActionBar().hide();
+			}			
+
+			@Override
+			public void onTick(long arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		}.start();
+		
+	}
+
+	public void surfaceChanged(SurfaceHolder surfaceholder, int i, int j, int k) {
      
     	Log.d(TAG, "surfaceChanged called");
 
@@ -176,6 +207,11 @@ public class MediaPlayerDemo_Video extends Activity implements
     @Override
     protected void onPause() {
         super.onPause();
+        if(timer != null)
+        {
+        	timer.cancel();
+        timer = null;
+        }
         releaseMediaPlayer();
         doCleanUp();
     }

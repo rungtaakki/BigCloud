@@ -22,20 +22,26 @@ public final class R {
     }
     public static final class drawable {
         public static final int action_search=0x7f020000;
-        public static final int av_play=0x7f020001;
-        public static final int ic_launcher=0x7f020002;
-        public static final int rating_important=0x7f020003;
+        public static final int av_download=0x7f020001;
+        public static final int av_play=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
+        public static final int navigation_next_item=0x7f020004;
+        public static final int rating_important=0x7f020005;
+        public static final int rating_not_important=0x7f020006;
     }
     public static final class id {
         public static final int PlayView=0x7f090003;
+        public static final int arrow=0x7f090004;
         public static final int emptyView=0x7f090001;
-        public static final int favourites=0x7f090007;
+        public static final int favourites=0x7f09000a;
         public static final int list=0x7f090000;
-        public static final int listItemCount_Duration=0x7f090005;
-        public static final int listItemName=0x7f090004;
+        public static final int listItemCount_Duration=0x7f090008;
+        public static final int listItemName=0x7f090007;
         public static final int listItemThumb=0x7f090002;
-        public static final int search=0x7f090008;
-        public static final int surface=0x7f090006;
+        public static final int list_download=0x7f090006;
+        public static final int list_favourite=0x7f090005;
+        public static final int search=0x7f09000b;
+        public static final int surface=0x7f090009;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;

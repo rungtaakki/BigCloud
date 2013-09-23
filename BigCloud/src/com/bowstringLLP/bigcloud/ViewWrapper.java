@@ -1,6 +1,5 @@
 package com.bowstringLLP.bigcloud;
 
-
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -11,6 +10,9 @@ public class ViewWrapper {
 	ImageView thumb = null;
 	ImageView play = null;
 	TextView count_duration = null;
+	ImageView favourite = null;
+	ImageView download = null;
+	ImageView arrow = null;
 	
 	ViewWrapper(View base) {
 		this.base=base;
@@ -46,5 +48,29 @@ public class ViewWrapper {
 		}
 
 		return(count_duration);
+	}
+	
+	ImageView getFavouriteImage() {
+		if (favourite==null) {
+			favourite=(ImageView)base.findViewById(R.id.list_favourite);
+		}
+
+		return(favourite);
+	}
+	
+	ImageView getDownloadImage() {
+		if (download==null) {
+			download=(ImageView)base.findViewById(R.id.list_download);
+		}
+
+		return(download);
+	}
+	
+	ImageView getArrowImage() {
+		if (arrow==null) {
+			arrow=(ImageView)base.findViewById(R.id.arrow);
+		}
+
+		return(arrow);
 	}
 }

@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -57,7 +58,7 @@ public class LoadPlaylistTask extends AsyncTask<Void, Void, List<PlaylistItem>> 
 			JSONArray obj = items.getJSONArray("entry");
 			JSONObject abc;
 
-			for (int i = 0; i < 20; i++) {
+			for (int i = 0; i<obj.length() && obj.getJSONObject(i)!=null; i++) {
 				InputStream in;
 				Bitmap bit;
 				String title;

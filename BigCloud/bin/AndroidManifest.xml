@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="10"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -48,7 +48,17 @@
         <activity
             android:name=".MediaPlayerDemo_Video"
             android:label="Video"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@style/AppBaseTheme" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.bowstringLLP.oneclickalcohol.MainActivity" />
+        </activity>
+        
+        
+        <activity
+            android:name=".FavouritesActivity"
+            android:label="Favourites"
+            android:theme="@style/AppBaseTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.bowstringLLP.oneclickalcohol.MainActivity" />

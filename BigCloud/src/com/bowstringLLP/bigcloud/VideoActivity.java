@@ -55,26 +55,44 @@ public class VideoActivity extends Activity implements VideoRecordsUpdateListene
 			recordsUpdated(records);
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		task.dialog.dismiss();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(!task.isCancelled())
+			task.dialog.show();
+	}
+	
 	private void startIntent(VideoItem item) {
 		Intent intent = new Intent(this, MediaPlayerDemo_Video.class);
 		intent.putExtra("PATH", item.link);
 		startActivity(intent);
 	}
-	
-	@Override
+
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		
-		 // Associate searchable configuration with the SearchView
-	    SearchManager searchManager =
-	           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-	    SearchView searchView =
-	            (SearchView) menu.findItem(R.id.search).getActionView();
-	    searchView.setSearchableInfo(
-	            searchManager.getSearchableInfo(getComponentName()));
+		setSearchView(menu);
 
 		return true;
+	}
+
+	@TargetApi(11)
+	private void setSearchView(Menu menu) { 
+		// Associate searchable configuration with the SearchView
+	    SearchManager searchManager =
+		           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		    SearchView searchView =
+		            (SearchView) menu.findItem(R.id.search).getActionView();
+		    searchView.setSearchableInfo(
+		            searchManager.getSearchableInfo(getComponentName()));
+		
 	}
 	
 	@Override
@@ -87,8 +105,7 @@ public class VideoActivity extends Activity implements VideoRecordsUpdateListene
 		case R.id.favourites:
 			break;
 		case R.id.search:
-			break;
-		default:
+			break;		default:
 			startActivity(item.getIntent());
 		}
 		return true;

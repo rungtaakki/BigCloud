@@ -5,8 +5,11 @@ import java.util.List;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 public class CustomListAdapter<T> extends ArrayAdapter<T> {
 
@@ -37,6 +40,11 @@ public class CustomListAdapter<T> extends ArrayAdapter<T> {
 
 		try {
 			if (rec.get(0).getClass().equals(PlaylistItem.class)) {
+				
+				wrapper.getArrowImage().setVisibility(View.VISIBLE);
+				wrapper.getFavouriteImage().setVisibility(View.INVISIBLE);
+				wrapper.getDownloadImage().setVisibility(View.INVISIBLE);
+				
 				playlist = (List<PlaylistItem>) rec;
 				if (playlist.get(position).title != null)
 					wrapper.getName().setText(playlist.get(position).title);
@@ -53,6 +61,11 @@ public class CustomListAdapter<T> extends ArrayAdapter<T> {
 						"No. of Videos: "
 								+ String.valueOf(playlist.get(position).count));
 			} else if(rec.get(0).getClass().equals(VideoItem.class)) {
+				
+				wrapper.getArrowImage().setVisibility(View.GONE);
+				wrapper.getFavouriteImage().setVisibility(View.VISIBLE);
+				wrapper.getDownloadImage().setVisibility(View.VISIBLE);
+				
 				videoList = (List<VideoItem>) rec;
 				if (videoList.get(position).title != null)
 					wrapper.getName().setText(videoList.get(position).title);
@@ -81,7 +94,28 @@ public class CustomListAdapter<T> extends ArrayAdapter<T> {
 			e.printStackTrace();
 		}
 
+		setupFavouriteButton(position, wrapper.getFavouriteImage());
 		return row;
+	}
+
+	private void setupFavouriteButton(final int position, final ImageView view) {
+		
+		view.setOnClickListener(new OnClickListener() {
+		      @Override
+		      public void onClick(View v) {
+		    	  videoList.get(position).isFavourite = !videoList.get(position).isFavourite;
+		    	  if(videoList.get(position).isFavourite)
+		    	  {
+		    		  PlaylistActivity.manipulator.insert(videoList.get(position));
+		    		  view.setImageDrawable(getContext().getResources().getDrawable(R.drawable.rating_important));
+		    	  }
+		    	  else
+		    	  {
+		    		  PlaylistActivity.manipulator.delete(videoList.get(position));
+		    		  view.setImageDrawable(getContext().getResources().getDrawable(R.drawable.rating_not_important));
+		    	  }
+		      }
+		  });
 	}
 
 	public void setContent(List<T> list) {

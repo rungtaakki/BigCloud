@@ -1,8 +1,8 @@
 package com.bowstringLLP.bigcloud;
 
-import java.io.Serializable;
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -23,13 +23,15 @@ public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateL
 	CustomListAdapter adapter;
 	List<PlaylistItem> records;
 	LoadPlaylistTask task;
+	static DataManipulator manipulator;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		adapter = new CustomListAdapter(this);
-
+		manipulator = new DataManipulator(this);
+		
 		task = (LoadPlaylistTask) new LoadPlaylistTask(this).execute(null,null,null);
 		
 		list = ((ListView) this.findViewById(R.id.list));
@@ -49,6 +51,19 @@ public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateL
 			recordsUpdated(records);
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		task.dialog.dismiss();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(!task.isCancelled())
+			task.dialog.show();
+	}
+	
 	private void startIntent(PlaylistItem item) {
 		Intent intent = new Intent(this, VideoActivity.class);
 		intent.putExtra("PATH", item.link);
@@ -60,15 +75,21 @@ public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateL
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		
-		 // Associate searchable configuration with the SearchView
-	    SearchManager searchManager =
-	           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-	    SearchView searchView =
-	            (SearchView) menu.findItem(R.id.search).getActionView();
-	    searchView.setSearchableInfo(
-	            searchManager.getSearchableInfo(getComponentName()));
+		setSearchView(menu);
 
 		return true;
+	}
+
+	@TargetApi(11)
+	private void setSearchView(Menu menu) { 
+		// Associate searchable configuration with the SearchView
+	    SearchManager searchManager =
+		           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		    SearchView searchView =
+		            (SearchView) menu.findItem(R.id.search).getActionView();
+		    searchView.setSearchableInfo(
+		            searchManager.getSearchableInfo(getComponentName()));
+		
 	}
 
 	@Override

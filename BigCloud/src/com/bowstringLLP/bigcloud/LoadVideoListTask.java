@@ -15,8 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.bowstringLLP.bigcloud.LoadPlaylistTask.PlaylistRecordsUpdateListener;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
@@ -76,7 +74,7 @@ public class LoadVideoListTask extends AsyncTask<String, Void, List<VideoItem>> 
 				in = new java.net.URL(thumb).openStream();
 				bit = BitmapFactory.decodeStream(in);
 				
-				listItem.add(new VideoItem(title, duration, Url, bit, thumb));
+				listItem.add(new VideoItem(i, title, duration, Url, bit, thumb));
 			}
 			
 			return listItem;
@@ -89,7 +87,7 @@ public class LoadVideoListTask extends AsyncTask<String, Void, List<VideoItem>> 
 	@Override
 	protected void onPostExecute(List<VideoItem> list) {
 		dialog.dismiss();
-		listener.recordsUpdated(list);
+		listener.recordsUpdated(list);		
 	}
 	
 	private String getUrl(String path) throws IOException, JSONException {
