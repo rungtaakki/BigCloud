@@ -63,18 +63,24 @@ public class LoadVideoListTask extends AsyncTask<String, Void, List<VideoItem>> 
 			String Url;
 			int duration= 0;
 			String thumb;
+			
+			List<VideoItem> favList = PlaylistActivity.manipulator.readAll();
+			
 			for (int i = 0; i<obj.length() && obj.getJSONObject(i)!=null; i++) {
 				
 				abc = obj.getJSONObject(i);
 				title =  abc.getJSONObject("title").getString("$t");
 				Url = abc.getJSONObject("media$group").getJSONArray("media$content").getJSONObject(2).getString("url");
-				duration = Integer.parseInt(abc.getJSONObject("media$group").getJSONArray("media$content").getJSONObject(2).getString("duration"));
+				duration = Integer.parseInt(abc.getJSONObject("media$group").getJSONArray("media$content").getJSONObject(1).getString("duration"));
 				thumb = abc.getJSONObject("media$group").getJSONArray("media$thumbnail").getJSONObject(0).getString("url");
 				
 				in = new java.net.URL(thumb).openStream();
 				bit = BitmapFactory.decodeStream(in);
 				
-				listItem.add(new VideoItem(i, title, duration, Url, bit, thumb));
+				if(PlaylistActivity.manipulator.contains(i))
+					listItem.add(new VideoItem(i, title, duration, Url, bit, thumb, true));
+				else
+					listItem.add(new VideoItem(i, title, duration, Url, bit, thumb, false));
 			}
 			
 			return listItem;
@@ -86,8 +92,15 @@ public class LoadVideoListTask extends AsyncTask<String, Void, List<VideoItem>> 
 
 	@Override
 	protected void onPostExecute(List<VideoItem> list) {
-		dialog.dismiss();
+		if(dialog!=null)
+			dialog.dismiss();
 		listener.recordsUpdated(list);		
+	}
+	
+	@Override
+	protected void onCancelled() {
+		super.onCancelled();
+		dialog.dismiss();
 	}
 	
 	private String getUrl(String path) throws IOException, JSONException {

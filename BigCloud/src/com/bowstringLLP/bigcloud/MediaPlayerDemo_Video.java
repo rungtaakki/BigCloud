@@ -18,6 +18,9 @@ package com.bowstringLLP.bigcloud;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -28,12 +31,17 @@ import android.media.MediaPlayer.OnVideoSizeChangedListener;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.MediaController;
+import android.widget.SearchView;
+import android.widget.SeekBar;
 
 
 public class MediaPlayerDemo_Video extends Activity implements
@@ -63,12 +71,56 @@ public class MediaPlayerDemo_Video extends Activity implements
         holder = mPreview.getHolder();
         holder.addCallback(this);
         extras = getIntent().getExtras();
+        setupActionBar();
         hideActionBar();
     }
 
     @TargetApi(11)
     private void hideActionBar() {
 		getActionBar().hide();
+	}
+	
+	@TargetApi(11)
+	private void setupActionBar() {
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+	}
+	
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		
+		setSearchView(menu);
+
+		return true;
+	}
+
+	@TargetApi(11)
+	private void setSearchView(Menu menu) { 
+		// Associate searchable configuration with the SearchView
+	    SearchManager searchManager =
+		           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		    SearchView searchView =
+		            (SearchView) menu.findItem(R.id.search).getActionView();
+		    searchView.setSearchableInfo(
+		            searchManager.getSearchableInfo(getComponentName()));
+		
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId())
+		{
+		case android.R.id.home:
+	        NavUtils.navigateUpFromSameTask(this);
+			break;
+		case R.id.favourites:			
+			startActivity(new Intent(this, FavouritesActivity.class));
+			break;
+		case R.id.search:
+			break;		default:
+			startActivity(item.getIntent());
+		}
+		return true;
 	}
 
 	private void playVideo(String path) {
@@ -94,7 +146,9 @@ public class MediaPlayerDemo_Video extends Activity implements
 
     public void onBufferingUpdate(MediaPlayer arg0, int percent) {
         Log.d(TAG, "onBufferingUpdate percent:" + percent);
-
+        int topContainerId1 = getResources().getIdentifier("mediacontroller_progress", "id", "android");
+        SeekBar seekbar = (SeekBar) mediaController.findViewById(topContainerId1);
+        seekbar.setSecondaryProgress(percent);
     }
 
     public void onCompletion(MediaPlayer arg0) {
@@ -162,7 +216,7 @@ public class MediaPlayerDemo_Video extends Activity implements
     public boolean onTouchEvent(MotionEvent event) {
       //the MediaController will hide after 3 seconds - tap the screen to make it appear again
       mediaController.show();
-     handleActionBar();
+      handleActionBar();
       return false;
     }
     

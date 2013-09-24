@@ -8,6 +8,8 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,8 +22,8 @@ import com.bowstringLLP.bigcloud.LoadVideoListTask.VideoRecordsUpdateListener;
 
 public class VideoActivity extends Activity implements VideoRecordsUpdateListener{
 
-	ListView list;
-	CustomListAdapter adapter;
+	ListView listView;
+	CustomListAdapter<VideoItem> adapter;
 	List<VideoItem> records;
 	LoadVideoListTask task;
 	
@@ -29,13 +31,22 @@ public class VideoActivity extends Activity implements VideoRecordsUpdateListene
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		adapter = new CustomListAdapter(this);
+		adapter = new CustomListAdapter<VideoItem> (this);
 
 		setupActionBar();
+		try
+		{
+			records = (List<VideoItem>) getLastNonConfigurationInstance();
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		if(records==null)
 		task = (LoadVideoListTask) new LoadVideoListTask(this).execute(getIntent().getExtras().getString("PATH"),null,null);
 		
-		list = ((ListView) this.findViewById(R.id.list));
-		list.setOnItemClickListener(new OnItemClickListener() {
+		listView = ((ListView) this.findViewById(R.id.list));
+		listView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 			startIntent(records.get(arg2));
 		}
@@ -44,7 +55,7 @@ public class VideoActivity extends Activity implements VideoRecordsUpdateListene
 
 	@TargetApi(11)
 	private void setupActionBar() {
-		getActionBar().setHomeButtonEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -55,22 +66,10 @@ public class VideoActivity extends Activity implements VideoRecordsUpdateListene
 			recordsUpdated(records);
 	}
 	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		task.dialog.dismiss();
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if(!task.isCancelled())
-			task.dialog.show();
-	}
-	
 	private void startIntent(VideoItem item) {
 		Intent intent = new Intent(this, MediaPlayerDemo_Video.class);
-		intent.putExtra("PATH", item.link);
+		//intent.putExtra("PATH", item.link);
+		intent.putExtra("PATH", Environment.getExternalStorageDirectory().toString()+"/video/wildlife.mp4");
 		startActivity(intent);
 	}
 
@@ -92,7 +91,6 @@ public class VideoActivity extends Activity implements VideoRecordsUpdateListene
 		            (SearchView) menu.findItem(R.id.search).getActionView();
 		    searchView.setSearchableInfo(
 		            searchManager.getSearchableInfo(getComponentName()));
-		
 	}
 	
 	@Override
@@ -100,10 +98,10 @@ public class VideoActivity extends Activity implements VideoRecordsUpdateListene
 		switch(item.getItemId())
 		{
 		case android.R.id.home:
-			onBackPressed();
+	        NavUtils.navigateUpFromSameTask(this);
 			break;
 		case R.id.favourites:
-			break;
+			startActivity(new Intent(this, FavouritesActivity.class));
 		case R.id.search:
 			break;		default:
 			startActivity(item.getIntent());
@@ -115,7 +113,12 @@ public class VideoActivity extends Activity implements VideoRecordsUpdateListene
 	public void recordsUpdated(List<VideoItem> list) {			
 		records = list;	
 		adapter.setContent(list);
-		((ListView) findViewById(R.id.list)).setAdapter(adapter);		
+		listView.setAdapter(adapter);		
+	}
+	
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+	    return records;
 	}
 }
 

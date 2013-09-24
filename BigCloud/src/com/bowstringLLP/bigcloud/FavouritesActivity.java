@@ -8,33 +8,52 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class FavouritesActivity extends Activity {
 	
-	List<VideoItem> videoList;
+	ListView listView;
 	CustomListAdapter<VideoItem> adapter;
+	List<VideoItem> videoList;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
+		setupActionBar();
 		adapter = new CustomListAdapter<VideoItem>(this);
+		
+		listView = ((ListView) this.findViewById(R.id.list));
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+			startIntent(videoList.get(arg2));
+		}
+	});
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		
-		new FavouritesTask();
+		new FavouritesTask().execute(null,null,null);
+	}
+	
+	@TargetApi(11)
+	private void setupActionBar() {
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -63,15 +82,23 @@ public class FavouritesActivity extends Activity {
 		switch(item.getItemId())
 		{
 		case android.R.id.home:
-			onBackPressed();
+	        NavUtils.navigateUpFromSameTask(this);
 			break;
-		case R.id.favourites:
+		case R.id.favourites:			
+			new FavouritesTask().execute(null,null,null);
 			break;
 		case R.id.search:
 			break;		default:
 			startActivity(item.getIntent());
 		}
 		return true;
+	}
+	
+	private void startIntent(VideoItem item) {
+		Intent intent = new Intent(this, MediaPlayerDemo_Video.class);
+		//intent.putExtra("PATH", item.link);
+		intent.putExtra("PATH", Environment.getExternalStorageDirectory().toString()+"/video/wildlife.mp4");
+		startActivity(intent);
 	}
 	
 	private class FavouritesTask extends AsyncTask<Void, Void, Void> {
@@ -87,13 +114,13 @@ public class FavouritesActivity extends Activity {
 		@Override
 		protected Void doInBackground(Void... params) {
 			
-			videoList = PlaylistActivity.manipulator.read();
+			videoList = PlaylistActivity.manipulator.readAll();
 			
 			if(videoList == null)
 				return null;
 			InputStream in;
 			
-			for(int i=0; i<videoList.size() & videoList.get(i)!=null; i++)
+			for(int i=0; i<videoList.size() && videoList.get(i)!=null; i++)
 			{
 				try{
 					in = new java.net.URL(videoList.get(i).thumb).openStream();

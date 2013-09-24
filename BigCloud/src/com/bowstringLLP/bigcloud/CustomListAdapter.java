@@ -9,7 +9,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 public class CustomListAdapter<T> extends ArrayAdapter<T> {
 
@@ -89,33 +88,45 @@ public class CustomListAdapter<T> extends ArrayAdapter<T> {
 										+ String.valueOf(videoList
 												.get(position).duration)
 										+ " seconds");
+				
+				setupFavouriteButton(position, wrapper.getFavouriteImage());
+				
+				final int i = position;
+				wrapper.getFavouriteImage().setOnClickListener(new OnClickListener() {
+				      @Override
+				      public void onClick(View v) {
+				    	  VideoItem vid = videoList.get(i);
+				    	  vid.isFavourite = !vid.isFavourite;
+				    	  if(videoList.get(i).isFavourite)
+				    		  PlaylistActivity.manipulator.insert(vid);
+				    	  
+					  	  else
+					  		  PlaylistActivity.manipulator.delete(vid);
+				    	  
+				    	  setupFavouriteButton(i, (ImageView) v);
+				      }
+				});
+				
+				wrapper.getDownloadImage().setOnClickListener(new OnClickListener() {
+				      @Override
+				      public void onClick(View v) {
+				    	  VideoItem vid = videoList.get(i);
+				    	  DownloadVideo.download(vid.link, vid.id);
+				      }
+				});
 			}
 		} catch (ClassCastException e) {
 			e.printStackTrace();
 		}
-
-		setupFavouriteButton(position, wrapper.getFavouriteImage());
 		return row;
 	}
 
-	private void setupFavouriteButton(final int position, final ImageView view) {
-		
-		view.setOnClickListener(new OnClickListener() {
-		      @Override
-		      public void onClick(View v) {
-		    	  videoList.get(position).isFavourite = !videoList.get(position).isFavourite;
-		    	  if(videoList.get(position).isFavourite)
-		    	  {
-		    		  PlaylistActivity.manipulator.insert(videoList.get(position));
-		    		  view.setImageDrawable(getContext().getResources().getDrawable(R.drawable.rating_important));
-		    	  }
-		    	  else
-		    	  {
-		    		  PlaylistActivity.manipulator.delete(videoList.get(position));
-		    		  view.setImageDrawable(getContext().getResources().getDrawable(R.drawable.rating_not_important));
-		    	  }
-		      }
-		  });
+	private void setupFavouriteButton(int position, ImageView view) {
+		      
+		      if(videoList.get(position).isFavourite)
+		    	  view.setImageDrawable(getContext().getResources().getDrawable(R.drawable.rating_important));
+		  	  else
+		  		  view.setImageDrawable(getContext().getResources().getDrawable(R.drawable.rating_not_important));
 	}
 
 	public void setContent(List<T> list) {

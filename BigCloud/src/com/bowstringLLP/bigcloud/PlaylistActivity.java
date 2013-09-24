@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -20,7 +21,7 @@ import com.bowstringLLP.bigcloud.LoadPlaylistTask.PlaylistRecordsUpdateListener;
 public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateListener{
 
 	ListView list;
-	CustomListAdapter adapter;
+	CustomListAdapter<PlaylistItem> adapter;
 	List<PlaylistItem> records;
 	LoadPlaylistTask task;
 	static DataManipulator manipulator;
@@ -29,10 +30,19 @@ public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateL
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		adapter = new CustomListAdapter(this);
+		adapter = new CustomListAdapter<PlaylistItem> (this);
 		manipulator = new DataManipulator(this);
 		
-		task = (LoadPlaylistTask) new LoadPlaylistTask(this).execute(null,null,null);
+		try
+		{
+			records = (List<PlaylistItem>) getLastNonConfigurationInstance();
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		if(records==null)
+			task = (LoadPlaylistTask) new LoadPlaylistTask(this).execute(null,null,null);
 		
 		list = ((ListView) this.findViewById(R.id.list));
 		list.setOnItemClickListener(new OnItemClickListener() {
@@ -51,19 +61,6 @@ public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateL
 			recordsUpdated(records);
 	}
 	
-	@Override
-	protected void onPause() {
-		super.onPause();
-		task.dialog.dismiss();
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if(!task.isCancelled())
-			task.dialog.show();
-	}
-	
 	private void startIntent(PlaylistItem item) {
 		Intent intent = new Intent(this, VideoActivity.class);
 		intent.putExtra("PATH", item.link);
@@ -79,6 +76,19 @@ public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateL
 
 		return true;
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId())
+		{
+		case R.id.favourites:
+			startActivity(new Intent(this, FavouritesActivity.class));
+		case R.id.search:
+			break;		default:
+			startActivity(item.getIntent());
+		}
+		return true;
+	}
 
 	@TargetApi(11)
 	private void setSearchView(Menu menu) { 
@@ -89,7 +99,6 @@ public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateL
 		            (SearchView) menu.findItem(R.id.search).getActionView();
 		    searchView.setSearchableInfo(
 		            searchManager.getSearchableInfo(getComponentName()));
-		
 	}
 
 	@Override
@@ -97,5 +106,10 @@ public class PlaylistActivity extends Activity implements PlaylistRecordsUpdateL
 		records = list;
 		adapter.setContent(list);
 		((ListView) findViewById(R.id.list)).setAdapter(adapter);		
+	}
+	
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+	    return records;
 	}
 }

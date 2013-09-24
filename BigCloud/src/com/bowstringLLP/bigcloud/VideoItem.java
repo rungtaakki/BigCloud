@@ -13,13 +13,14 @@ public class VideoItem {
 	boolean isFavourite = false;
 
 	public VideoItem(int id, String title, int duration, String link, Bitmap bitmap,
-			String thumb) {
+			String thumb, boolean isFavourite) {
 		
 		this.id = id;
 		this.title = title;
 		this.link = link;
 		this.duration = duration;
 		this.thumb = thumb;
+		this.isFavourite = isFavourite;
 		
 		if(bitmap!=null)			
 			this.bitmap = bitmap;

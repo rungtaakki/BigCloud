@@ -37,8 +37,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginLeft="4dp"
         android:src="@drawable/rating_not_important"
-        android:visibility="invisible"
-        android:onClick="onFavouriteClick" />
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/list_download"

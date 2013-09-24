@@ -31,7 +31,8 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".SearchResultsActivity" >
+        <activity android:name=".SearchResultsActivity"
+            android:parentActivityName="com.bowstringLLP.bigcloud.PlaylistActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -39,7 +40,8 @@
         
         <activity
             android:name=".VideoActivity"
-            android:theme="@style/AppBaseTheme" >
+            android:theme="@style/AppBaseTheme"
+            android:parentActivityName="com.bowstringLLP.bigcloud.PlaylistActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.bowstringLLP.bigcloud.PlaylistActivity" />
@@ -48,20 +50,21 @@
         <activity
             android:name=".MediaPlayerDemo_Video"
             android:label="Video"
-            android:theme="@style/AppBaseTheme" >
+            android:theme="@style/AppBaseTheme"
+            android:parentActivityName="com.bowstringLLP.bigcloud.PlaylistActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.bowstringLLP.oneclickalcohol.MainActivity" />
+                android:value="com.bowstringLLP.bigcloud.PlaylistActivity" />
         </activity>
-        
         
         <activity
             android:name=".FavouritesActivity"
             android:label="Favourites"
-            android:theme="@style/AppBaseTheme" >
+            android:theme="@style/AppBaseTheme"
+            android:parentActivityName="com.bowstringLLP.bigcloud.PlaylistActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.bowstringLLP.oneclickalcohol.MainActivity" />
+                android:value="com.bowstringLLP.bigcloud.PlaylistActivity" />
         </activity>
     </application>
 

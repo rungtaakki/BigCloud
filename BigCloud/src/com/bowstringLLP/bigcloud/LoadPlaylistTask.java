@@ -87,8 +87,15 @@ public class LoadPlaylistTask extends AsyncTask<Void, Void, List<PlaylistItem>> 
 
 	@Override
 	protected void onPostExecute(List<PlaylistItem> list) {
-		dialog.dismiss();
+		if(dialog!=null)
+			dialog.dismiss();
 		listener.recordsUpdated(list);
+	}
+	
+	@Override
+	protected void onCancelled() {
+		super.onCancelled();
+		dialog.dismiss();
 	}
 
 	private String getUrl() throws IOException, JSONException {

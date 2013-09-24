@@ -32,7 +32,7 @@ public class DataManipulator {
 		return db.insert("favlist", null, value);
 	}
 
-	public List<VideoItem> read() {
+	public List<VideoItem> readAll() {
 		SQLiteCursor cursor = (SQLiteCursor) db.rawQuery("Select*From "
 				+ TABLE_NAME, null);
 
@@ -44,12 +44,28 @@ public class DataManipulator {
 						.getColumnIndex("Title")), cursor.getInt(cursor
 						.getColumnIndex("Duration")), cursor.getString(cursor
 						.getColumnIndex("Link")), null, cursor.getString(cursor
-						.getColumnIndex("Thumbnail"))));
+						.getColumnIndex("Thumbnail")), true));
 			} while (cursor.moveToNext());
 		}
 		cursor.close();
 
 		return favList;
+	}
+	
+	public boolean contains(int id) {
+		SQLiteCursor cursor = (SQLiteCursor) db.rawQuery("Select Video_ID From "
+				+ TABLE_NAME + " WHERE Video_ID=" + id, null);
+		
+		
+		if(cursor!=null && cursor.getCount()>0)
+			{
+			cursor.close();
+			return true;
+			}
+		else if(cursor!=null)
+			cursor.close();
+		
+		return false;
 	}
 
 	public void deleteAll() {
@@ -76,6 +92,6 @@ public class DataManipulator {
 	}
 
 	public void delete(VideoItem videoItem) {
-		db.delete(TABLE_NAME, "WHERE Video_ID=videoItem.id", null);
+		db.delete(TABLE_NAME, "Video_ID=" + videoItem.id, null);
 	}
 }
